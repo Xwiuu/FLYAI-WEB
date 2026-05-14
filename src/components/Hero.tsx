@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import useGsapRefresh from "@/lib/useGsapRefresh";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin();
@@ -15,7 +16,7 @@ function createLightning(startX: number, startY: number, endX: number, endY: num
 
   // Quebra a linha reta em vários pedaços e desloca eles (Fractal)
   for (let i = 0; i < 4; i++) {
-    const newSegments = [];
+    const newSegments: { x: number; y: number }[] = [];
     for (let j = 0; j < segments.length - 1; j++) {
       const p1 = segments[j];
       const p2 = segments[j + 1];
@@ -38,117 +39,129 @@ function createLightning(startX: number, startY: number, endX: number, endY: num
 export default function Hero() {
   const containerRef = useRef<HTMLElement>(null);
   const [dimensions, setDimensions] = useState({ w: 1000, h: 1000 });
+  const [isTouch] = useState<boolean>(() => typeof window !== "undefined" && (("ontouchstart" in window) || ((navigator.maxTouchPoints ?? 0) > 0)));
 
-  // Pega o tamanho real da tela para os raios saberem até onde ir
+  // Debounced ScrollTrigger refresh on resize
+  useGsapRefresh();
+
+  // Pega o tamanho real da tela para os raios saberem até onde ir (SSR-safe)
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const updateSize = () => {
-      setDimensions({
-        w: window.innerWidth,
-        h: window.innerHeight,
-      });
+      const w = Math.max(320, Math.min(window.innerWidth, 2560));
+      const h = Math.max(320, Math.min(window.innerHeight, 2560));
+      setDimensions({ w, h });
     };
-    
+
     updateSize();
     window.addEventListener("resize", updateSize);
-    return () => window.removeEventListener("resize", updateSize);
+    window.addEventListener("orientationchange", updateSize);
+    return () => {
+      window.removeEventListener("resize", updateSize);
+      window.removeEventListener("orientationchange", updateSize);
+    };
   }, []);
 
   useGSAP(() => {
     // 1. Reveal majestoso dos textos
-    gsap.fromTo(".hero-reveal", 
-      { y: 50, opacity: 0 }, 
+    gsap.fromTo(
+      ".hero-reveal",
+      { y: 50, opacity: 0 },
       { y: 0, opacity: 1, duration: 1.2, stagger: 0.15, ease: "power3.out" }
     );
 
     // 2. A Mágica da Tempestade de Plasma Automática
     const strikes = gsap.utils.toArray<SVGPathElement>(".lightning-strike");
-    
+    const strikesCount = isTouch ? 3 : 6; // reduzir em touch
+
     const fireStrike = (path: SVGPathElement) => {
       const cx = dimensions.w / 2;
       const cy = dimensions.h / 2;
-      
+
       // Escolhe um alvo aleatório para atirar o raio (Gira 360 graus)
       const angle = Math.random() * Math.PI * 2;
-      const length = Math.max(dimensions.w, dimensions.h) * (0.4 + Math.random() * 0.4);
-      
+      const length = Math.max(dimensions.w, dimensions.h) * (0.35 + Math.random() * 0.35);
+
       const targetX = cx + Math.cos(angle) * length;
       const targetY = cy + Math.sin(angle) * length;
 
       // Desenha o raio
       path.setAttribute("d", createLightning(cx, cy, targetX, targetY));
-      
+
       // Animação do brilho explosivo (Aparece forte e apaga rápido)
-      gsap.fromTo(path,
-        { opacity: Math.random() * 0.6 + 0.4, strokeWidth: Math.random() * 3 + 1 },
-        { 
+      gsap.fromTo(
+        path,
+        { opacity: Math.random() * 0.5 + 0.3, strokeWidth: Math.random() * 2 + 0.8 },
+        {
           opacity: 0,
-          duration: 0.05 + Math.random() * 0.15, // Duração de um piscar de olhos
+          duration: 0.05 + Math.random() * (isTouch ? 0.08 : 0.15), // menor no touch
           ease: "power4.out",
           onComplete: () => {
             // Agenda o próximo tiro desse mesmo raio (aleatório entre 0.2 e 1.5 segundos)
-            gsap.delayedCall(Math.random() * 1.5 + 0.2, () => fireStrike(path));
+            gsap.delayedCall(Math.random() * (isTouch ? 0.9 : 1.5) + 0.2, () => fireStrike(path));
           }
         }
       );
     };
 
-    // Dá o start em todos os raios (com um delay aleatório pra não atirarem juntos)
-    strikes.forEach((path) => {
-      setTimeout(() => fireStrike(path), Math.random() * 1000);
+    // Dá o start em alguns raios (com um delay aleatório pra não atirarem juntos)
+    strikes.slice(0, strikesCount).forEach((path) => {
+      setTimeout(() => fireStrike(path), Math.random() * (isTouch ? 600 : 1000));
     });
 
-  }, { scope: containerRef, dependencies: [dimensions] });
+  }, { scope: containerRef, dependencies: [dimensions, isTouch] });
 
   return (
-    <section 
+    <section
       ref={containerRef}
-      className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-black px-6 pt-20"
+      className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-x-hidden overflow-y-hidden bg-black px-6 pt-20"
     >
       {/* O GERADOR DE TEMPESTADE (SVG em tela cheia) */}
-      <svg 
-        className="pointer-events-none absolute inset-0 z-10 h-full w-full mix-blend-screen" 
+      <svg
+        className="pointer-events-none absolute inset-0 z-10 h-full w-full mix-blend-screen"
         viewBox={`0 0 ${dimensions.w} ${dimensions.h}`}
         preserveAspectRatio="none"
       >
         {/* Glow de energia estática no centro (Atrás do FlyAI) */}
-        <circle 
-          cx={dimensions.w / 2} 
-          cy={dimensions.h / 2} 
-          r="150" 
-          fill="rgba(255, 255, 255, 0.03)" 
-          className="blur-[50px]" 
+        <circle
+          cx={dimensions.w / 2}
+          cy={dimensions.h / 2}
+          r={Math.max(100, Math.min(300, Math.min(dimensions.w, dimensions.h) * 0.15))}
+          fill="rgba(255, 255, 255, 0.03)"
+          className="blur-[50px]"
         />
         
-        {/* 6 Raios independentes para criar a tempestade */}
+        {/* Raios: gerados de acordo com o max possível, mas renderizados apenas os primeiros N */}
         {[...Array(6)].map((_, i) => (
-          <path 
+          <path
             key={i}
-            className="lightning-strike" 
-            stroke="white" 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            fill="none" 
-            style={{ filter: "drop-shadow(0 0 8px rgba(255,255,255,0.8))" }} // Brilho no CSS pra não pesar
+            className="lightning-strike"
+            stroke="white"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+            style={{ filter: isTouch ? "drop-shadow(0 0 4px rgba(255,255,255,0.5))" : "drop-shadow(0 0 8px rgba(255,255,255,0.8))" }}
           />
         ))}
       </svg>
 
       {/* CONTEÚDO PRINCIPAL (Blindado e Intacto) */}
-      <div className="relative z-20 flex w-full max-w-4xl flex-col items-center text-center">
+      <div className="relative z-20 flex w-full max-w-screen-xl flex-col items-center text-center">
         
         {/* A Marca Soberana */}
-        <h1 className="hero-reveal mb-8 text-7xl font-bold tracking-tighter text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.1)] sm:text-8xl md:text-[10rem]">
+        <h1 className="hero-reveal mb-8 text-4xl font-bold tracking-tighter text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.1)] sm:text-5xl md:text-7xl lg:text-9xl">
           FlyAI
         </h1>
 
         {/* A Copy Absoluta */}
-        <p className="hero-reveal mb-12 max-w-2xl text-lg font-light leading-relaxed text-zinc-300 sm:text-xl">
+        <p className="hero-reveal mb-12 max-w-2xl text-base font-light leading-relaxed text-zinc-300 sm:text-lg md:text-xl">
           Nós não criamos ferramentas. Arquitetamos infraestruturas de inteligência autônoma que orquestram e escalam a sua operação.
         </p>
 
         {/* Botão de Protocolo */}
         <div className="hero-reveal flex gap-4">
-          <button className="group relative flex h-14 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-white px-10 font-medium text-black transition-transform hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+          <button className="group relative inline-flex min-h-[44px] min-w-[44px] items-center justify-center overflow-hidden rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition-transform hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]">
             <span className="relative z-10 flex items-center gap-2">
               Iniciar Protocolo
               <svg className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">

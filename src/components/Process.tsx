@@ -4,6 +4,7 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import useGsapRefresh from "@/lib/useGsapRefresh";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -34,6 +35,9 @@ const steps = [
 
 export default function Process() {
   const containerRef = useRef<HTMLElement>(null);
+
+  // Debounced ScrollTrigger refresh
+  useGsapRefresh();
 
   useGSAP(() => {
     // 1. Reveal do Cabeçalho
@@ -94,8 +98,8 @@ export default function Process() {
   }, { scope: containerRef });
 
   return (
-    <section ref={containerRef} id="process" className="relative w-full bg-black py-32 px-6 md:py-48">
-      <div className="mx-auto max-w-4xl">
+    <section ref={containerRef} id="process" className="relative w-full bg-black py-20 px-4 md:py-32 md:px-6 overflow-x-hidden">
+      <div className="mx-auto max-w-screen-xl">
         
         {/* CABEÇALHO */}
         <div className="process-header mb-24 flex flex-col gap-6 md:mb-32">
@@ -112,11 +116,11 @@ export default function Process() {
         <div className="timeline-container relative flex flex-col gap-16 md:gap-24">
           
           {/* A Linha Fundo (Apagada) */}
-          <div className="absolute left-[15px] top-0 bottom-0 w-[1px] bg-white/10 md:left-[23px]" />
+          <div className="absolute left-4 top-0 bottom-0 w-[1px] bg-white/10 md:left-6" />
           
           {/* A Linha de Energia (Renderizada via GPU com scaleY) */}
           <div 
-            className="energy-line absolute left-[15px] top-0 bottom-0 w-[2px] bg-gradient-to-b from-white via-white to-transparent shadow-[0_0_15px_rgba(255,255,255,0.5)] md:left-[23px]" 
+            className="energy-line absolute left-4 top-0 bottom-0 w-[2px] bg-gradient-to-b from-white via-white to-transparent shadow-[0_0_15px_rgba(255,255,255,0.5)] md:left-6" 
           />
 
           {/* OS 4 PASSOS */}

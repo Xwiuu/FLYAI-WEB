@@ -7,6 +7,7 @@ import { useGSAP } from "@gsap/react";
 export default function Navbar() {
   const navRef = useRef<HTMLElement>(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
 
   // Monitora o scroll para ativar o efeito de vidro (Glassmorphism)
   useEffect(() => {
@@ -40,7 +41,7 @@ export default function Navbar() {
           : "bg-transparent py-6"
       }`}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6">
+      <div className="mx-auto flex max-w-screen-xl items-center justify-between px-6">
         
         {/* LOGO */}
         <div className="flex items-center gap-2 cursor-pointer group">
@@ -72,18 +73,37 @@ export default function Navbar() {
 
         {/* BOTÃO CTA (Sempre visível para conversão) */}
         <div className="flex items-center gap-4">
-          <button className="group relative inline-flex h-10 items-center justify-center overflow-hidden rounded-full border border-white/20 bg-transparent px-6 text-sm font-medium text-white transition-all hover:bg-white hover:text-black">
+          <button className="group relative inline-flex min-h-[44px] min-w-[44px] items-center justify-center overflow-hidden rounded-full border border-white/20 bg-transparent px-4 py-2 text-sm font-medium text-white transition-all hover:bg-white hover:text-black">
             <span className="relative z-10">Iniciar Protocolo</span>
           </button>
 
           {/* MENU MOBILE (Hamburger minimalista) */}
-          <button className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-full border border-white/10 bg-white/5 md:hidden">
-            <span className="h-[1.5px] w-4 bg-white transition-all"></span>
-            <span className="h-[1.5px] w-4 bg-white transition-all"></span>
+          <button aria-label="Abrir menu" aria-expanded={open} onClick={() => setOpen(!open)} className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 md:hidden">
+            <span className="sr-only">Menu</span>
+            <svg className="h-5 w-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+              <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </button>
         </div>
 
       </div>
+
+      {/* MOBILE DRAWER */}
+      {open && (
+        <div className="md:hidden">
+          <div className="absolute right-4 top-full mt-2 z-40 w-[calc(100%-32px)] max-w-sm rounded-xl bg-zinc-950/95 border border-white/5 p-4 backdrop-blur-md">
+            <nav className="flex flex-col gap-3">
+              <a onClick={() => setOpen(false)} href="#systems" className="block rounded-md px-3 py-3 text-sm font-medium text-zinc-300 hover:bg-white/5">Ecossistema</a>
+              <a onClick={() => setOpen(false)} href="#cases" className="block rounded-md px-3 py-3 text-sm font-medium text-zinc-300 hover:bg-white/5">Engenharia</a>
+              <a onClick={() => setOpen(false)} href="#process" className="block rounded-md px-3 py-3 text-sm font-medium text-zinc-300 hover:bg-white/5">Protocolo</a>
+              <div className="mt-2 border-t border-white/5 pt-3">
+                <a onClick={() => setOpen(false)} href="#contact" className="inline-flex w-full items-center justify-center rounded-full bg-white px-4 py-3 text-sm font-medium text-black">Iniciar Protocolo</a>
+              </div>
+            </nav>
+          </div>
+        </div>
+      )}
+
     </header>
   );
 }

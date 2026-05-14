@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import useGsapRefresh from "@/lib/useGsapRefresh";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -11,6 +12,10 @@ if (typeof window !== "undefined") {
 
 export default function Cases() {
   const sectionRef = useRef<HTMLElement>(null);
+  const [isTouch] = useState<boolean>(() => typeof window !== "undefined" && (("ontouchstart" in window) || ((navigator.maxTouchPoints ?? 0) > 0)));
+
+  // Debounced ScrollTrigger refresh
+  useGsapRefresh();
 
   useGSAP(() => {
     // 1. Reveal dos Mockups
@@ -22,7 +27,7 @@ export default function Cases() {
         y: 0,
         opacity: 1,
         duration: 1,
-        stagger: 0.15,
+        stagger: isTouch ? 0.05 : 0.15,
         ease: "power3.out",
         scrollTrigger: {
           trigger: sectionRef.current,
@@ -31,32 +36,32 @@ export default function Cases() {
       }
     );
 
-    // MOCKUP 1: Animação dos Nodes
+    // MOCKUP 1: Animação dos Nodes (reduzido em touch)
     gsap.to(".node-pulse", {
-      scale: 1.3,
-      opacity: 0.4,
-      duration: 1.2,
+      scale: isTouch ? 1.08 : 1.3,
+      opacity: isTouch ? 0.6 : 0.4,
+      duration: isTouch ? 2.2 : 1.2,
       yoyo: true,
       repeat: -1,
-      stagger: 0.2,
+      stagger: isTouch ? 0.6 : 0.2,
       ease: "power1.inOut",
     });
 
     // MOCKUP 2: Animação das Barras (Blindada com ScaleY)
     gsap.to(".bar-animate", {
-      scaleY: 0.3,
-      duration: 0.8,
+      scaleY: isTouch ? 0.6 : 0.3,
+      duration: isTouch ? 1.2 : 0.8,
       yoyo: true,
       repeat: -1,
-      stagger: 0.1,
+      stagger: isTouch ? 0.2 : 0.1,
       ease: "power2.inOut",
     });
 
     // MOCKUP 3: Vector Cells (Blindado com Opacidade Clássica)
     gsap.to(".vector-cell", {
-      opacity: 0.2,
-      duration: 0.4,
-      stagger: { each: 0.1, from: "center", grid: "auto" },
+      opacity: isTouch ? 0.6 : 0.2,
+      duration: isTouch ? 0.6 : 0.4,
+      stagger: { each: isTouch ? 0.2 : 0.1, from: "center", grid: "auto" },
       repeat: -1,
       yoyo: true,
       ease: "power1.inOut",
@@ -64,9 +69,9 @@ export default function Cases() {
 
     // MOCKUP 4: Pulsos Neurais
     gsap.to(".neural-link", {
-      opacity: 1,
-      duration: 0.6,
-      stagger: { each: 0.1, from: "start" },
+      opacity: isTouch ? 0.5 : 1,
+      duration: isTouch ? 1.2 : 0.6,
+      stagger: { each: isTouch ? 0.2 : 0.1, from: "start" },
       repeat: -1,
       yoyo: true,
       ease: "power2.inOut"
@@ -75,22 +80,22 @@ export default function Cases() {
   }, { scope: sectionRef });
 
   return (
-    <section ref={sectionRef} id="cases" className="relative w-full bg-black py-32 px-6 md:py-48">
-      <div className="mx-auto max-w-7xl">
+    <section ref={sectionRef} id="cases" className="relative w-full bg-black py-20 px-4 md:py-32 md:px-6 overflow-x-hidden">
+      <div className="mx-auto max-w-screen-xl">
         
         {/* CABEÇALHO */}
-        <div className="mb-20 flex flex-col gap-6 md:items-center md:text-center">
-          <h2 className="text-4xl font-light tracking-tight text-white md:text-6xl">
+        <div className="mb-12 flex flex-col gap-4 md:items-center md:text-center">
+          <h2 className="text-2xl font-light tracking-tight text-white sm:text-3xl md:text-4xl lg:text-5xl">
             A anatomia de uma <br className="hidden md:block" />
             <span className="font-medium text-zinc-600">operação inteligente.</span>
           </h2>
-          <p className="max-w-2xl text-lg font-light text-zinc-400">
+          <p className="max-w-2xl text-base font-light text-zinc-400">
             Veja a inteligência em tempo real. Nós não entregamos caixas pretas. Você tem controle e visualização absoluta sobre cada camada da sua IA.
           </p>
         </div>
 
         {/* GRID DOS 4 MOCKUPS (2x2 no Desktop) */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2 lg:gap-8">
           
           {/* MOCKUP 1: AGENT WORKFLOW */}
           <div className="mockup-window flex flex-col overflow-hidden rounded-3xl border border-white/5 bg-zinc-950/40">
