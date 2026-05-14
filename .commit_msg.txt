@@ -1,9 +1,0 @@
-Refactor responsive components, GSAP optimizations, touch handling
-
-Files: src/components/Hero.tsx, src/components/Services.tsx, src/components/Cases.tsx, src/components/Process.tsx, src/components/Navbar.tsx, src/lib/useGsapRefresh.ts
-
-- 1→2→3 column grids, fluid text sizes
-- SSR-safe window checks and debounced ScrollTrigger.refresh
-- Reduced heavy mouse-follow on touch, accessible mobile drawer
-
-Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
