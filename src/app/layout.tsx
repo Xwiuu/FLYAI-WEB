@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://flyai.com.br"),
   title: "FlyAI | Arquitetura de Sistemas Nervosos Artificiais",
   description: "Não criamos apenas ferramentas. Arquitetamos infraestruturas de inteligência autônoma que orquestram e escalam sua operação.",
   keywords: ["Inteligência Artificial", "SaaS B2B", "Cibersegurança", "Automação Industrial", "FlyAI"],

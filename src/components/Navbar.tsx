@@ -84,9 +84,9 @@ export default function Navbar() {
 
         {/* BOTÃO CTA (Sempre visível para conversão) */}
         <div className="flex items-center gap-4">
-          <button className="group relative inline-flex min-h-[44px] min-w-[44px] items-center justify-center overflow-hidden rounded-full border border-white/20 bg-transparent px-4 py-2 text-sm font-medium text-white transition-all hover:bg-white hover:text-black">
+          <a href="https://wa.me/5515996192574" target="_blank" rel="noopener noreferrer" className="group relative inline-flex min-h-[44px] min-w-[44px] items-center justify-center overflow-hidden rounded-full border border-white/20 bg-transparent px-4 py-2 text-sm font-medium text-white transition-all hover:bg-white hover:text-black">
             <span className="relative z-10">Iniciar Protocolo</span>
-          </button>
+          </a>
 
           {/* MENU MOBILE (Hamburger minimalista) */}
           <button aria-label="Abrir menu" aria-expanded={open} onClick={() => setOpen(!open)} className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 md:hidden">
@@ -108,7 +108,7 @@ export default function Navbar() {
               <a onClick={() => setOpen(false)} href="#cases" className="block rounded-md px-3 py-3 text-sm font-medium text-zinc-300 hover:bg-white/5">Engenharia</a>
               <a onClick={() => setOpen(false)} href="#process" className="block rounded-md px-3 py-3 text-sm font-medium text-zinc-300 hover:bg-white/5">Protocolo</a>
               <div className="mt-2 border-t border-white/5 pt-3">
-                <a onClick={() => setOpen(false)} href="#contact" className="inline-flex w-full items-center justify-center rounded-full bg-white px-4 py-3 text-sm font-medium text-black">Iniciar Protocolo</a>
+                <a onClick={() => setOpen(false)} href="https://wa.me/5515996192574" target="_blank" rel="noopener noreferrer" className="inline-flex w-full items-center justify-center rounded-full bg-white px-4 py-3 text-sm font-medium text-black">Iniciar Protocolo</a>
               </div>
             </nav>
           </div>

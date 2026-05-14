@@ -161,14 +161,14 @@ export default function Hero() {
 
         {/* Botão de Protocolo */}
         <div className="hero-reveal flex gap-4">
-          <button className="group relative inline-flex min-h-[44px] min-w-[44px] items-center justify-center overflow-hidden rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition-transform hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+          <a href="https://wa.me/5515996192574" target="_blank" rel="noopener noreferrer" className="group relative inline-flex min-h-[44px] min-w-[44px] items-center justify-center overflow-hidden rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition-transform hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]">
             <span className="relative z-10 flex items-center gap-2">
               Iniciar Protocolo
               <svg className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             </span>
-          </button>
+          </a>
         </div>
 
       </div>

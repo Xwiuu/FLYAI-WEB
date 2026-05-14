@@ -67,7 +67,7 @@ export default function CTA() {
 
         {/* BOTÃO PREMIUM (Com borda animada) */}
         <div className="cta-reveal mt-8">
-          <button className="group relative inline-flex h-16 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-zinc-950 px-10 font-medium text-white transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(255,255,255,0.3)]">
+          <a href="https://wa.me/5515996192574" target="_blank" rel="noopener noreferrer" className="group relative inline-flex h-16 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-zinc-950 px-10 font-medium text-white transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(255,255,255,0.3)]">
             
             {/* Gradiente giratório (A mágica do CSS) */}
             <div className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-12deg)_translateX(-150%)] group-hover:duration-1000 group-hover:[transform:skew(-12deg)_translateX(150%)]">
@@ -83,11 +83,11 @@ export default function CTA() {
 
             {/* Borda interna brilhante */}
             <div className="absolute inset-0 rounded-full border border-white/20 transition-colors duration-300 group-hover:border-white/50" />
-          </button>
+          </a>
         </div>
 
         <span className="cta-reveal mt-4 text-sm font-light tracking-widest text-zinc-600">
-          VAGAS LIMITADAS PARA ONBOARDING NO TRIMESTRE
+          Onboarding Q2 2026 — vagas em análise
         </span>
 
       </div>

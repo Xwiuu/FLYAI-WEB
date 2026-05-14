@@ -45,8 +45,7 @@ export default function Footer() {
 
             <div className="flex flex-col gap-4 col-span-2 md:col-span-1">
               <span className="text-xs font-medium tracking-widest text-zinc-600">SOCIAL</span>
-              <a href="#" className="text-sm font-light text-zinc-400 hover:text-white">LinkedIn</a>
-              <a href="#" className="text-sm font-light text-zinc-400 hover:text-white">Instagram</a>
+              <a href="https://www.instagram.com/Flyai.oficial/" target="_blank" rel="noopener noreferrer" className="text-sm font-light text-zinc-400 hover:text-white">Instagram</a>
               <a href="#" className="text-sm font-light text-zinc-400 hover:text-white">GitHub</a>
             </div>
 
